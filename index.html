@@ -2,36 +2,33 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Ultra Fast Visualizer</title>
   <link rel="stylesheet" href="https://unpkg.com/uplot@1.6.30/dist/uPlot.min.css">
   <style>
-    body { margin: 0; display: flex; height: 100vh; overflow: hidden; font-family: sans-serif; }
+    body { margin: 0; display: flex; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+    #sidebar { width: 260px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
     #chart-area { flex: 1; padding: 10px; background: white; position: relative; }
-    button { padding: 10px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; }
-    #status { margin-top: 15px; font-size: 13px; color: #ecf0f1; line-height: 1.5; }
-    .uplot { width: 100% !important; height: 100% !important; }
-    #sidebar { 
-    width: 250px; 
-    background: #2c3e50; 
-    color: white; 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
-    overflow-y: auto; /* 항목이 많을 때 스크롤 가능하게 */
-}
-.column-item label {
-    cursor: pointer;
-    margin-left: 5px;
-}
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
+    button { padding: 8px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; }
+    #loadBtn { grid-column: span 2; background: #27ae60; color: white; margin-bottom: 5px; }
+    .sel-btn { background: #34495e; color: #ecf0f1; font-size: 11px; }
+    button:hover { opacity: 0.8; }
+    #status { font-size: 12px; color: #bdc3c7; margin-bottom: 15px; word-break: break-all; }
+    #legend-container { flex: 1; overflow-y: auto; border-top: 1px solid #34495e; padding-top: 10px; }
+    .col-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 12px; }
+    .col-item input { margin-right: 8px; cursor: pointer; }
+    /* 툴팁 스타일 */
+    .u-tooltip { position: absolute; background: rgba(255,255,255,0.95); border: 1px solid #ccc; padding: 8px; border-radius: 4px; pointer-events: none; z-index: 100; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
   <div id="sidebar">
-    <button id="loadBtn">CSV 불러오기</button>
-    <div id="status">파일을 대기 중입니다...</div>
-    <div style="margin-top: auto; font-size: 11px; color: #bdc3c7;">
-      왼쪽 드래그: 확대<br>우클릭: 초기화<br>휠: 줌
+    <div class="controls">
+      <button id="loadBtn">CSV 파일 불러오기</button>
+      <button id="allBtn" class="sel-btn">전체 선택</button>
+      <button id="noneBtn" class="sel-btn">전체 해제</button>
     </div>
+    <div id="status">파일을 대기 중입니다...</div>
+    <div id="legend-container"></div>
   </div>
   <div id="chart-area"></div>
   <script src="renderer.js"></script>
