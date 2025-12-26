@@ -6,47 +6,31 @@
   <style>
     body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: #f4f4f4; font-family: sans-serif; }
     #sidebar { width: 280px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; }
-    
-    /* 사이드바 글씨 흰색 단색 처리 */
     .col-item label { color: white !important; cursor: pointer; font-size: 12px; margin-left: 5px; }
     .col-item { display: flex; align-items: center; margin-bottom: 6px; padding: 4px; border-radius: 4px; }
     .col-item:hover { background: #34495e; }
-
     #main-content { flex: 1; display: flex; flex-direction: column; background: white; }
     #chart-area { flex: 1; padding: 10px; position: relative; }
-    
-    /* 고정 데이터 표시 영역 */
-    #pinned-data { 
-        height: 80px; 
-        background: #f8f9fa; 
-        border-top: 2px solid #ddd; 
-        padding: 10px 20px; 
-        font-size: 13px; 
-        color: #333;
-        overflow-y: auto;
-    }
-
-    /* 하단 범례: 선택된 것만 표시 */
+    #pinned-data { height: 80px; background: #f8f9fa; border-top: 2px solid #ddd; padding: 10px 20px; font-size: 13px; color: #333; overflow-y: auto; }
     .u-legend .u-series.u-off { display: none !important; }
-    .u-legend .u-series { font-size: 11px; margin-right: 10px; }
-    
     button { margin-bottom: 5px; padding: 8px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
     #loadBtn { background: #27ae60; color: white; }
+    .action-btn { background:#34495e; color:white; flex:1; }
   </style>
 </head>
 <body>
   <div id="sidebar">
     <button id="loadBtn">Load CSV File</button>
     <div style="display:flex; gap:5px; margin-bottom:10px;">
-        <button id="allBtn" style="flex:1; background:#34495e; color:white;">Select All</button>
-        <button id="noneBtn" style="flex:1; background:#34495e; color:white;">Unselect All</button>
+        <button id="allBtn" class="action-btn">Select All</button>
+        <button id="noneBtn" class="action-btn">Deselect All</button>
     </div>
-    <div id="status" style="font-size:11px; color:#bdc3c7; margin-bottom:10px;">Please give me data :)</div>
+    <div id="status" style="font-size:11px; color:#bdc3c7; margin-bottom:10px;">Ready</div>
     <div id="legend-container"></div>
   </div>
   <div id="main-content">
     <div id="chart-area"></div>
-    <div id="pinned-data">Marked data.</div>
+    <div id="pinned-data">Click a point to display Marked Value.</div>
   </div>
   <script src="renderer.js"></script>
 </body>
