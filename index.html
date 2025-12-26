@@ -4,20 +4,21 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://unpkg.com/uplot@1.6.30/dist/uPlot.min.css">
   <style>
-    body { margin: 0; display: flex; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-    #sidebar { width: 260px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+    body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; }
+    #sidebar { width: 280px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; }
+    
+    /* 사이드바 글씨 흰색 단색 처리 */
+    .col-item label { color: white !important; cursor: pointer; font-size: 12px; }
+    .col-item { display: flex; align-items: center; margin-bottom: 8px; }
+    .col-item:hover { background: #34495e; }
+
     #chart-area { flex: 1; padding: 10px; background: white; position: relative; }
-    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 15px; }
-    button { padding: 8px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; transition: 0.2s; }
-    #loadBtn { grid-column: span 2; background: #27ae60; color: white; margin-bottom: 5px; }
-    .sel-btn { background: #34495e; color: #ecf0f1; font-size: 11px; }
-    button:hover { opacity: 0.8; }
-    #status { font-size: 12px; color: #bdc3c7; margin-bottom: 15px; word-break: break-all; }
-    #legend-container { flex: 1; overflow-y: auto; border-top: 1px solid #34495e; padding-top: 10px; }
-    .col-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 12px; }
-    .col-item input { margin-right: 8px; cursor: pointer; }
-    /* 툴팁 스타일 */
-    .u-tooltip { position: absolute; background: rgba(255,255,255,0.95); border: 1px solid #ccc; padding: 8px; border-radius: 4px; pointer-events: none; z-index: 100; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    
+    /* uPlot 범례 커스텀: 선택되지 않은 항목은 하단에서 숨김 */
+    .u-legend .u-series:not(.u-off) { display: inline-block; margin-right: 15px; font-size: 12px; }
+    .u-legend .u-series.u-off { display: none !important; }
+    
+    .u-tooltip { position: absolute; background: rgba(255,255,255,0.9); border: 1px solid #333; padding: 5px; z-index: 100; pointer-events: none; }
   </style>
 </head>
 <body>
