@@ -1,7 +1,7 @@
 {
   "name": "ultra-fast-chart-app",
   "version": "1.0.0",
-  "author": "KI.Shin",
+  "author": "YourName",
   "description": "High Performance Chart Tool",
   "main": "main.js",
   "scripts": {
@@ -13,13 +13,18 @@
     "papaparse": "^5.4.1"
   },
   "devDependencies": {
-    "electron": "28.2.0", 
+    "electron": "28.2.0",
     "electron-builder": "^24.13.3"
   },
   "build": {
     "asar": true,
     "win": {
-      "target": "portable",
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
     }
   }
 }
