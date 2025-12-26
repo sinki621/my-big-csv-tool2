@@ -9,6 +9,7 @@
     "package": "electron-builder --win"
   },
   "build": {
+    "asar": true,
     "win": {
       "target": [
         {
