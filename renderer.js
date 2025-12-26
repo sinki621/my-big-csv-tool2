@@ -50,7 +50,7 @@ document.getElementById('loadBtn').onclick = async () => {
         
         rowCount++;
         if (rowCount % 100000 === 0) {
-            statusLabel.innerText = `${rowCount.toLocaleString()} 행 분석 중...`;
+            statusLabel.innerText = `${rowCount.toLocaleString()} Loading...`;
         }
     });
 
@@ -69,7 +69,7 @@ document.getElementById('loadBtn').onclick = async () => {
 
         createSidebar();
         renderChart();
-        statusLabel.innerText = `${rowCount.toLocaleString()} 행 로드 완료 (최고속 모드)`;
+        statusLabel.innerText = `${rowCount.toLocaleString()} Row Loaded`;
     });
 };
 
