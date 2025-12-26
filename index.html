@@ -36,17 +36,17 @@
 </head>
 <body>
   <div id="sidebar">
-    <button id="loadBtn">CSV 파일 불러오기</button>
+    <button id="loadBtn">Load CSV File</button>
     <div style="display:flex; gap:5px; margin-bottom:10px;">
-        <button id="allBtn" style="flex:1; background:#34495e; color:white;">전체 선택</button>
-        <button id="noneBtn" style="flex:1; background:#34495e; color:white;">전체 해제</button>
+        <button id="allBtn" style="flex:1; background:#34495e; color:white;">Select All</button>
+        <button id="noneBtn" style="flex:1; background:#34495e; color:white;">Unselect All</button>
     </div>
-    <div id="status" style="font-size:11px; color:#bdc3c7; margin-bottom:10px;">대기 중...</div>
+    <div id="status" style="font-size:11px; color:#bdc3c7; margin-bottom:10px;">Loading..Please wait! Please!</div>
     <div id="legend-container"></div>
   </div>
   <div id="main-content">
     <div id="chart-area"></div>
-    <div id="pinned-data">그래프의 특정 지점을 클릭하면 데이터가 이곳에 고정됩니다.</div>
+    <div id="pinned-data">Marked data.</div>
   </div>
   <script src="renderer.js"></script>
 </body>
