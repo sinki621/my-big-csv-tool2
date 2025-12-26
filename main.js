@@ -27,7 +27,7 @@ function createWindow() {
 ipcMain.handle('open-file', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [{ name: 'CSV 데이터 파일', extensions: ['csv'] }]
+    filters: [{ name: 'Load CSV File', extensions: ['csv'] }]
   });
   return canceled ? null : filePaths[0];
 });
