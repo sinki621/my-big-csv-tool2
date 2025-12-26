@@ -11,24 +11,17 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20 # 지원 종료된 18 대신 20 사용으로 EBADENGINE 오류 방지
 
       - name: Install dependencies
-        # 먼저 모든 패키지를 설치합니다.
         run: npm install
 
-      - name: Optimize for Production
-        # 빌드 직전에 실행: 개발용 라이브러리를 제거하여 EXE 용량을 줄이고 실행 속도를 높입니다.
-        run: npm prune --production
-
       - name: Build EXE
-        # --publish never: 토큰 에러 방지
-        # npx를 사용하여 설치된 환경에서 즉시 실행합니다.
+        # prune 단계를 건너뛰고 바로 빌드하여 electron 패키지 누락 방지
         run: npx electron-builder --win --publish never
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: HighSpeedViewer-Portable
-          # 빌드된 단일 실행 파일(.exe)이 저장되는 경로입니다.
           path: dist/*.exe
