@@ -20,7 +20,6 @@
     "asar": true,
     "win": {
       "target": "portable",
-      "icon": "icon.ico"
     }
   }
 }
