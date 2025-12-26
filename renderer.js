@@ -11,7 +11,7 @@ document.getElementById('loadBtn').onclick = async () => {
     const filePath = await ipcRenderer.invoke('open-file');
     if (!filePath) return;
 
-    document.getElementById('status').innerText = "데이터 처리 중...";
+    document.getElementById('status').innerText = "데이터 분석 중...";
     
     Papa.parse(filePath, {
         download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
@@ -19,17 +19,22 @@ document.getElementById('loadBtn').onclick = async () => {
             const rows = results.data;
             columns = Object.keys(rows[0]);
             
-            // X축(날짜) 및 Y축 데이터 배열 생성 (고속 TypedArray 활용)
             uData = [new Float64Array(rows.length)];
             for (let j = 1; j < columns.length; j++) uData.push(new Float64Array(rows.length));
 
             rows.forEach((row, i) => {
+                // X축 시간 처리
                 const ts = new Date(row[columns[0]]).getTime() / 1000;
                 uData[0][i] = isNaN(ts) ? i : ts;
-                for (let j = 1; j < columns.length; j++) uData[j][i] = row[columns[j]];
+                
+                // Y축 데이터 강제 숫자 변환 (0 표시 문제 해결)
+                for (let j = 1; j < columns.length; j++) {
+                    const val = parseFloat(row[columns[j]]);
+                    uData[j][i] = isNaN(val) ? 0 : val;
+                }
             });
 
-            createLegend();
+            createSidebar();
             renderChart();
         }
     });
@@ -42,44 +47,78 @@ function renderChart() {
 
     const opts = {
         width: container.offsetWidth - 20,
-        height: container.offsetHeight - 40,
-        cursor: { drag: { setScale: true } }, // 드래그 확대
-        scales: { x: { time: true }, y: { auto: true } }, // 자동 스케일
+        height: container.offsetHeight - 60,
+        cursor: { 
+            drag: { setScale: true },
+            points: { size: 8, fill: "#000" } // 마우스 오버 시 점 표시
+        },
+        scales: { 
+            x: { time: true, auto: true }, 
+            y: { auto: true } 
+        },
         series: [
-            {}, // X축
+            {
+                label: "Time",
+                value: (u, ts) => ts == null ? "-" : new Date(ts * 1000).toLocaleString('ko-KR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                })
+            },
             ...columns.slice(1).map((name, i) => ({
                 label: name,
-                show: false, // 초기 로드 시 전체 해제 상태
-                stroke: `hsl(${(i * 360 / (columns.length-1))}, 70%, 50%)`,
+                show: false,
+                stroke: `hsl(${(i * 137.5) % 360}, 70%, 50%)`, // 겹치지 않는 색상 알고리즘
                 width: 1.5,
+                points: { show: false }
             }))
         ],
-        axes: [{}, { grid: { show: true } }],
-        plugins: [tooltipPlugin()] // 커스텀 툴팁 플러그인
+        axes: [
+            {
+                space: 80,
+                values: [
+                    [3600 * 24, "{YYYY}-{MM}-{DD}", null, null, null, null, null, null, 1],
+                    [3600, "{HH}:{mm}", null, null, null, null, null, null, 1],
+                    [60, "{HH}:{mm}:{ss}", null, null, null, null, null, null, 1],
+                ]
+            },
+            { grid: { show: true } }
+        ],
+        legend: { show: true, live: true }, // 선택된 데이터만 하단에 표시되도록 설정
+        hooks: {
+            init: [
+                u => {
+                    // 우클릭 "View All" 메뉴 추가
+                    u.over.oncontextmenu = e => {
+                        e.preventDefault();
+                        u.setData(u.data, true); // 전체 보기로 초기화
+                        return false;
+                    };
+                }
+            ]
+        }
     };
 
     chart = new uPlot(opts, uData, container);
     document.getElementById('status').innerText = `${uData[0].length.toLocaleString()} 행 로드 완료`;
 }
 
-// 3. 사이드바 범례 및 전체 선택/해제 버튼 로직
-function createLegend() {
+// 3. 사이드바 (글씨 흰색 단색 처리)
+function createSidebar() {
     const container = document.getElementById('legend-container');
     container.innerHTML = '';
     columns.slice(1).forEach((name, i) => {
         const div = document.createElement('div');
         div.className = 'col-item';
-        const color = `hsl(${(i * 360 / (columns.length-1))}, 70%, 50%)`;
         div.innerHTML = `<input type="checkbox" id="ch-${i}" class="col-ch">
-                         <label for="ch-${i}" style="color:${color}">${name}</label>`;
+                         <label for="ch-${i}">${name}</label>`;
         container.appendChild(div);
     });
 
-    // 체크박스 이벤트 연결
     document.querySelectorAll('.col-ch').forEach((cb, i) => {
         cb.onchange = () => {
             chart.setSeries(i + 1, { show: cb.checked });
-            chart.redraw(); // 자동 스케일 적용
+            // 선택할 때마다 자동으로 X, Y축 스케일 조정
+            chart.setData(chart.data, true); 
         };
     });
 }
@@ -92,38 +131,5 @@ function setAllStates(state) {
         cb.checked = state;
         chart.setSeries(i + 1, { show: state });
     });
-    chart.redraw();
-}
-
-// 4. 커스텀 팝업 툴팁 플러그인 (파이썬 팝업 기능 대체)
-function tooltipPlugin() {
-    let tooltip;
-    return {
-        hooks: {
-            init: (u) => {
-                tooltip = document.createElement("div");
-                tooltip.className = "u-tooltip";
-                tooltip.style.display = "none";
-                u.over.appendChild(tooltip);
-            },
-            setCursor: (u) => {
-                const { left, top, idx } = u.cursor;
-                if (idx == null) {
-                    tooltip.style.display = "none";
-                    return;
-                }
-                const dateStr = new Date(u.data[0][idx] * 1000).toLocaleString();
-                let html = `<b>${dateStr}</b><br/>`;
-                u.series.forEach((s, i) => {
-                    if (i > 0 && s.show) {
-                        html += `<span style="color:${s.stroke}">● ${s.label}: ${u.data[i][idx].toFixed(4)}</span><br/>`;
-                    }
-                });
-                tooltip.style.display = "block";
-                tooltip.style.left = (left + 15) + "px";
-                tooltip.style.top = (top + 15) + "px";
-                tooltip.innerHTML = html;
-            }
-        }
-    };
+    chart.setData(chart.data, true);
 }
