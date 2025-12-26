@@ -4,34 +4,50 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://unpkg.com/uplot@1.6.30/dist/uPlot.min.css">
   <style>
-    body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; }
-    #sidebar { width: 280px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; }
+    body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: #f4f4f4; font-family: sans-serif; }
+    #sidebar { width: 280px; background: #2c3e50; color: white; padding: 15px; display: flex; flex-direction: column; overflow-y: auto; }
     
     /* 사이드바 글씨 흰색 단색 처리 */
-    .col-item label { color: white !important; cursor: pointer; font-size: 12px; }
-    .col-item { display: flex; align-items: center; margin-bottom: 8px; }
+    .col-item label { color: white !important; cursor: pointer; font-size: 12px; margin-left: 5px; }
+    .col-item { display: flex; align-items: center; margin-bottom: 6px; padding: 4px; border-radius: 4px; }
     .col-item:hover { background: #34495e; }
 
-    #chart-area { flex: 1; padding: 10px; background: white; position: relative; }
+    #main-content { flex: 1; display: flex; flex-direction: column; background: white; }
+    #chart-area { flex: 1; padding: 10px; position: relative; }
     
-    /* uPlot 범례 커스텀: 선택되지 않은 항목은 하단에서 숨김 */
-    .u-legend .u-series:not(.u-off) { display: inline-block; margin-right: 15px; font-size: 12px; }
+    /* 고정 데이터 표시 영역 */
+    #pinned-data { 
+        height: 80px; 
+        background: #f8f9fa; 
+        border-top: 2px solid #ddd; 
+        padding: 10px 20px; 
+        font-size: 13px; 
+        color: #333;
+        overflow-y: auto;
+    }
+
+    /* 하단 범례: 선택된 것만 표시 */
     .u-legend .u-series.u-off { display: none !important; }
+    .u-legend .u-series { font-size: 11px; margin-right: 10px; }
     
-    .u-tooltip { position: absolute; background: rgba(255,255,255,0.9); border: 1px solid #333; padding: 5px; z-index: 100; pointer-events: none; }
+    button { margin-bottom: 5px; padding: 8px; cursor: pointer; border-radius: 4px; border: none; font-weight: bold; }
+    #loadBtn { background: #27ae60; color: white; }
   </style>
 </head>
 <body>
   <div id="sidebar">
-    <div class="controls">
-      <button id="loadBtn">CSV 파일 불러오기</button>
-      <button id="allBtn" class="sel-btn">전체 선택</button>
-      <button id="noneBtn" class="sel-btn">전체 해제</button>
+    <button id="loadBtn">CSV 파일 불러오기</button>
+    <div style="display:flex; gap:5px; margin-bottom:10px;">
+        <button id="allBtn" style="flex:1; background:#34495e; color:white;">전체 선택</button>
+        <button id="noneBtn" style="flex:1; background:#34495e; color:white;">전체 해제</button>
     </div>
-    <div id="status">파일을 대기 중입니다...</div>
+    <div id="status" style="font-size:11px; color:#bdc3c7; margin-bottom:10px;">대기 중...</div>
     <div id="legend-container"></div>
   </div>
-  <div id="chart-area"></div>
+  <div id="main-content">
+    <div id="chart-area"></div>
+    <div id="pinned-data">그래프의 특정 지점을 클릭하면 데이터가 이곳에 고정됩니다.</div>
+  </div>
   <script src="renderer.js"></script>
 </body>
 </html>
